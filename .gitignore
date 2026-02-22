@@ -1,0 +1,60 @@
+# Файлы и папки, генерируемые Unity (Кэш, логи, временные файлы)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# Снимки памяти и записи (могут весить очень много)
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Плагины редактора, которые генерируются автоматически
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Специфичные файлы IDE (Visual Studio, Rider и т.д.)
+.vs/
+.idea/
+.gradle/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Мета-файлы от сгенерированных файлов Unity
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Файлы отчетов о крашах
+sysinfo.txt
+crashlytics-build.properties
+
+# Собранные билды и пакеты
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Мусорные файлы операционных систем (Windows / macOS)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
