@@ -1,4 +1,7 @@
+using _Game.Scripts.Infrastructure.Factories;
+using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
+using _Game.Scripts.TileScripts.Effects;
 using _Game.Scripts.TileScripts.StaticData;
 using TMPro;
 using UnityEngine;
@@ -9,19 +12,22 @@ namespace _Game.Scripts.TileScripts
     [RequireComponent(typeof(Rigidbody))]
     public class TileCube : MonoBehaviour
     {
+        [SerializeField] private TileFlickerEffect _flickerEffect;
+        [SerializeField] private TailVFX _vfxSync;
+
         private TextMeshPro[] numberTexts;
         public MeshRenderer tileRenderer;
 
         private ParticleService _particleService;
+        private AudioService _audioService;
+        private GameplayFactory _gameplayFactory;
 
         private int _value;
         private TileConfig _config;
         private IObjectPool<TileCube> _pool;
         private Rigidbody _rb;
-        
-        [SerializeField] private float minMergeImpulse = 2f; 
 
-        public bool isMerging; 
+        private bool isMerging; 
 
         private void Awake()
         {
@@ -29,12 +35,15 @@ namespace _Game.Scripts.TileScripts
             _rb = GetComponent<Rigidbody>();
         }
 
-        public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool, ParticleService particleService)
+        public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool,
+            ParticleService particleService, AudioService audioService, GameplayFactory gameplayFactory)
         {
             _value = value;
             _config = config;
             _pool = pool;
             _particleService = particleService;
+            _audioService = audioService;
+            _gameplayFactory = gameplayFactory;
             isMerging = false;
             UpdateVisual();
         }
@@ -50,7 +59,11 @@ namespace _Game.Scripts.TileScripts
             {
                 if (tc.number == _value)
                 {
-                    tileRenderer.material.color = tc.color * 0.5f;
+                    tileRenderer.material.color = tc.color;
+                    if (_vfxSync != null)
+                    {
+                        _vfxSync.SyncColor(tc.color);
+                    }
                     break;
                 }
             }
@@ -77,7 +90,7 @@ namespace _Game.Scripts.TileScripts
             if (other.isMerging) return;
             if (other.GetValue() != _value) return;
 
-            if (collision.relativeVelocity.magnitude < minMergeImpulse) 
+            if (collision.relativeVelocity.magnitude < _config.minMergeImpulse) 
                 return;
 
             if (gameObject.GetInstanceID() > other.gameObject.GetInstanceID())
@@ -96,12 +109,24 @@ namespace _Game.Scripts.TileScripts
             _value *= 2;
             UpdateVisual();
 
-            // ¡≈–≈Ã —»À” œ–€∆ ¿ »«  ŒÕ‘»√¿
+            if (_value == 2048)
+            {
+                _gameplayFactory.NotifyWin();
+                return;
+            }
+
             _rb.AddForce(Vector3.up * _config.mergeJumpForce, ForceMode.Impulse);
+
+            _audioService.PlaySfx(SoundId.Merge);
 
             if (_particleService != null)
             {
-                _particleService.Play(ParticleId.TileHit, mergePosition);
+                _particleService.Play(ParticleId.TileHit, mergePosition, tileRenderer.material.color);
+            }
+
+            if (_flickerEffect != null)
+            {
+                _flickerEffect.PlayFlick();
             }
 
             other.ReturnToPool();

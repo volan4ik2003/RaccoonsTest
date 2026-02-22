@@ -1,7 +1,8 @@
-using System.Threading.Tasks;
+using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.Spawning;
 using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.TileScripts;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -11,6 +12,7 @@ namespace _Game.Scripts.Infrastructure.Services.Input
     {
         private readonly TileSpawnerService _spawnService;
         private readonly StaticDataService _staticData;
+        private readonly AudioService _audioService;
         private readonly IInputService _inputService;
 
         private TileCube _currentTile;
@@ -23,11 +25,13 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         public TileControllerService(
             TileSpawnerService spawnService,
             StaticDataService staticData,
-            IInputService inputService)
+            IInputService inputService,
+            AudioService audioService)
         {
             _spawnService = spawnService;
             _staticData = staticData;
             _inputService = inputService;
+            _audioService = audioService;
         }
 
         public void StartGame()
@@ -85,7 +89,14 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             var config = _staticData.StaticDataContainer.TileContainer.Config;
 
             _currentRb.isKinematic = false;
+
+            _currentTile.transform.rotation = Quaternion.identity;
+
+            _currentRb.angularVelocity = Vector3.zero;
+
             _currentRb.AddForce(Vector3.forward * config.shootForce, ForceMode.Impulse);
+
+            _audioService.PlaySfx(SoundId.Swoosh);
 
             _currentTile = null;
             _currentRb = null;

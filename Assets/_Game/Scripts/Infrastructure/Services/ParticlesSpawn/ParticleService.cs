@@ -20,18 +20,50 @@ namespace _Game.Scripts.Infrastructure.Services.ParticlesSpawn
             _particlesContainer = new GameObject("[ParticlePool_Container]").transform;
         }
 
-        public void Play(ParticleId id, Vector3 position, float? scale = null, float? despawnAfter = null, Quaternion? rotation = null)
+        public void Play(ParticleId id, Vector3 position, Color? color = null, float? scale = null, float? despawnAfter = null, Quaternion? rotation = null)
         {
             var pool = GetPool(id);
             var instance = pool.Get();
 
             instance.transform.SetPositionAndRotation(position, rotation ?? Quaternion.identity);
 
+            if (color.HasValue)
+            {
+                Color targetColor = color.Value;
+                targetColor.a = 1f;
+
+                Gradient gradient = new Gradient();
+                gradient.SetKeys(
+                    new GradientColorKey[] { new GradientColorKey(targetColor, 0.0f), new GradientColorKey(targetColor, 1.0f) },
+                    new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(0.0f, 1.0f) }
+                );
+
+                ApplyGradient(instance, gradient, targetColor);
+
+                var children = instance.GetComponentsInChildren<ParticleSystem>();
+                foreach (var child in children)
+                {
+                    ApplyGradient(child, gradient, targetColor);
+                }
+            }
+
             ApplyScale(instance, scale);
 
             instance.Play();
 
             ScheduleDespawn(instance, pool, despawnAfter);
+        }
+
+        private void ApplyGradient(ParticleSystem ps, Gradient grad, Color startCol)
+        {
+            var main = ps.main;
+            main.startColor = startCol;
+
+            var colorModule = ps.colorOverLifetime;
+            if (colorModule.enabled)
+            {
+                colorModule.color = grad;
+            }
         }
 
         private IObjectPool<ParticleSystem> GetPool(ParticleId id)

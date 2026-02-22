@@ -19,21 +19,22 @@ MonoBehaviour:
   chanceForTwo: 0.75
   spawnDelayMs: 500
   mergeJumpForce: 4
+  minMergeImpulse: 2
   tileColors:
   - number: 2
-    color: {r: 0.7647059, g: 0.19485286, b: 0.11764705, a: 0}
+    color: {r: 0.8113208, g: 0.14925243, b: 0.14925243, a: 0}
   - number: 4
-    color: {r: 1, g: 0.53390247, b: 0, a: 0}
+    color: {r: 0.8867924, g: 0.5139492, b: 0.08784264, a: 0}
   - number: 8
-    color: {r: 1, g: 0.87076914, b: 0, a: 0}
+    color: {r: 0.8018868, g: 0.76100636, b: 0, a: 0}
   - number: 16
-    color: {r: 0.697368, g: 1, b: 0, a: 0}
+    color: {r: 0.6969161, g: 1, b: 0, a: 0}
   - number: 32
-    color: {r: 0.23115504, g: 1, b: 0, a: 0}
+    color: {r: 0, g: 0.6698113, b: 0.17861634, a: 0}
   - number: 64
-    color: {r: 0, g: 1, b: 0.6165807, a: 0}
+    color: {r: 0, g: 0.8665142, b: 1, a: 0}
   - number: 128
-    color: {r: 0, g: 0.6194389, b: 1, a: 0}
+    color: {r: 0, g: 0.3643055, b: 1, a: 0}
   - number: 256
     color: {r: 0.0048570633, g: 0, b: 1, a: 0}
   - number: 512

@@ -23,8 +23,9 @@ namespace _Game.Scripts.TileScripts.StaticData
         [Tooltip("Delay between spawning tiles")]
         public int spawnDelayMs = 500;
 
-        [Tooltip("Jump force while merging")]
+        [Tooltip("Merging forces")]
         public float mergeJumpForce = 4f;
+        public float minMergeImpulse = 4f;
 
         [Header("TileCube Visuals")]
         public TileColor[] tileColors;

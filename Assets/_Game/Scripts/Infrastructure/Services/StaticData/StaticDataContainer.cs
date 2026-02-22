@@ -1,5 +1,6 @@
+using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
-using _Game.Scripts.TileScripts.StaticData;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace _Game.Scripts.Infrastructure.Services.StaticData
@@ -9,5 +10,8 @@ namespace _Game.Scripts.Infrastructure.Services.StaticData
     {
         public TileContainer TileContainer;
         public ParticleContainer ParticleContainer;
+        public AudioContainer AudioContainer;
+
+        public HUD HUD;
     }
 }

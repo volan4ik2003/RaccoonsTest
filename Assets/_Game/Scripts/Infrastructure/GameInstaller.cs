@@ -2,6 +2,7 @@ using _Game.Scripts.Infrastructure;
 using _Game.Scripts.Infrastructure.AssetManagement;
 using _Game.Scripts.Infrastructure.Factories;
 using _Game.Scripts.Infrastructure.Services;
+using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.Input;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
 using _Game.Scripts.Infrastructure.Services.Spawning;
@@ -24,6 +25,7 @@ namespace _Game.Scripts.Infrastructure
             Container.Bind<LoadProgressState>().AsSingle();
             Container.Bind<LoadLevelState>().AsSingle();
             Container.Bind<GameLoopState>().AsSingle();
+            Container.Bind<WinGameState>().AsSingle();
 
             // Services
             Container.BindInterfacesAndSelfTo<AssetProvider>().AsSingle();
@@ -36,6 +38,7 @@ namespace _Game.Scripts.Infrastructure
             Container.BindInterfacesAndSelfTo<ParticleService>().AsSingle();
             Container.Bind<TileSpawnerService>().AsSingle();
             Container.BindInterfacesAndSelfTo<TileControllerService>().AsSingle();
+            Container.Bind<AudioService>().AsSingle();
 
             // Factories
             Container.BindInterfacesAndSelfTo<GameplayFactory>().AsSingle();

@@ -1,4 +1,5 @@
 using _Game.Scripts.Infrastructure.Factories;
+using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.Input;
 using _Game.Scripts.Infrastructure.Services.Spawning;
 using UnityEngine;
@@ -47,14 +48,18 @@ namespace _Game.Scripts.Infrastructure.States.ConcreteStates
             {
                 var spawner = sceneContext.Container.Resolve<TileSpawnerService>();
                 var controller = sceneContext.Container.Resolve<TileControllerService>();
+                var audio = sceneContext.Container.Resolve<AudioService>();
 
                 spawner.InitPool();
                 controller.StartGame();
+                audio.Init();
             }
             else
             {
                 Debug.LogError("No Scene Context");
             }
+
+            _uiFactory.CreateHUD();
         }
 
         public void Exit()

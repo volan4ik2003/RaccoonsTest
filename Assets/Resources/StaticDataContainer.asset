@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TileContainer: {fileID: 11400000, guid: 9645457fa67acd54482585b0dc3857a1, type: 2}
   ParticleContainer: {fileID: 11400000, guid: f4e63c1898ed9d549ac9688960641360, type: 2}
+  AudioContainer: {fileID: 11400000, guid: dda8a91759a29334b84fa89a5c22ddb3, type: 2}
+  HUD: {fileID: 3366389835465032825, guid: c3349a3b12dfeee41b7e716b5d22879b, type: 3}

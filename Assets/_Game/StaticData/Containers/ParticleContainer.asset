@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Particles:
   - Id: 0
-    Prefab: {fileID: 198134540073184148, guid: 8aa3b95275747bd49b1e47ee2cacdfbc, type: 3}
+    Prefab: {fileID: 253324237615365148, guid: 03173b6b91155ad47b47b3082e772736, type: 3}
