@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem; // Обязательно используем новый неймспейс!
+using UnityEngine.InputSystem;
 
 namespace _Game.Scripts.Infrastructure.Services.Input
 {
