@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc8d809739c6cd242a9927883c2c9826, type: 3}
   m_Name: TileConfig
   m_EditorClassIdentifier: 
-  shootForce: 10
-  moveSpeed: 5
+  shootForce: 25
+  moveSpeed: 10
   inputSensitivity: 1
+  horizontalLimit: 3.5
   chanceForTwo: 0.75
+  spawnDelayMs: 500
+  mergeJumpForce: 4
   tileColors:
   - number: 2
     color: {r: 0.7647059, g: 0.19485286, b: 0.11764705, a: 0}

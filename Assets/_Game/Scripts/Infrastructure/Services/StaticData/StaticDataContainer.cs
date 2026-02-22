@@ -7,7 +7,7 @@ namespace _Game.Scripts.Infrastructure.Services.StaticData
     [CreateAssetMenu(menuName = "Configs/Static Data Container")]
     public class StaticDataContainer : ScriptableObject
     {
-        public TileConfig TileConfig;
+        public TileContainer TileContainer;
         public ParticleContainer ParticleContainer;
     }
 }

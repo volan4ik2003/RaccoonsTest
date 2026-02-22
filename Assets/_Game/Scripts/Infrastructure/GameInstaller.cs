@@ -4,6 +4,7 @@ using _Game.Scripts.Infrastructure.Factories;
 using _Game.Scripts.Infrastructure.Services;
 using _Game.Scripts.Infrastructure.Services.Input;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
+using _Game.Scripts.Infrastructure.Services.Spawning;
 using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.Infrastructure.States;
 using _Game.Scripts.Infrastructure.States.ConcreteStates;
@@ -33,6 +34,8 @@ namespace _Game.Scripts.Infrastructure
                         ctx.Container.Resolve<ICoroutineRunner>()))
                 .AsSingle();
             Container.BindInterfacesAndSelfTo<ParticleService>().AsSingle();
+            Container.Bind<TileSpawnerService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TileControllerService>().AsSingle();
 
             // Factories
             Container.BindInterfacesAndSelfTo<GameplayFactory>().AsSingle();

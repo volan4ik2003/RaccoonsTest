@@ -1,34 +1,34 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem; // Обязательно используем новый неймспейс!
 
 namespace _Game.Scripts.Infrastructure.Services.Input
 {
-    public class StandaloneInputService : InputService
+    public class StandaloneInputService : IInputService
     {
-        private const string Horizontal = "Horizontal";
-        private const string Vertical = "Vertical";
-
-        public override Vector2 Axis
+        public Vector2 Axis
         {
             get
             {
-                if (IsPointerOverUI())
-                    return Vector2.zero;
-
-                return new Vector2(
-                    UnityEngine.Input.GetAxisRaw(Horizontal),
-                    UnityEngine.Input.GetAxisRaw(Vertical));
+                Vector2 axis = Vector2.zero;
+                if (Keyboard.current != null)
+                {
+                    if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                        axis.x = -1f;
+                    else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                        axis.x = 1f;
+                }
+                return axis;
             }
         }
 
-        public override bool FirePressed
+        public bool FirePressed
         {
             get
             {
-                if (IsPointerOverUI())
-                    return false;
+                bool mouseClick = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+                bool spacePress = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
 
-                return UnityEngine.Input.GetKeyDown(KeyCode.Space)
-                       || UnityEngine.Input.GetMouseButtonDown(0);
+                return mouseClick || spacePress;
             }
         }
     }

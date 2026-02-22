@@ -3,16 +3,19 @@ using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.TileScripts;
 using _Game.Scripts.TileScripts.StaticData;
 using UnityEngine;
+using Zenject;
 
 namespace _Game.Scripts.Infrastructure.Factories
 {
     public class GameplayFactory : IService
     {
         private readonly StaticDataService _staticDataService;
+        private readonly IInstantiator _instantiator;
 
-        public GameplayFactory(StaticDataService staticDataService)
+        public GameplayFactory(StaticDataService staticDataService, IInstantiator instantiator)
         {
             _staticDataService = staticDataService;
+            _instantiator = instantiator;
         }
 
         public void Init()
@@ -20,18 +23,11 @@ namespace _Game.Scripts.Infrastructure.Factories
             
         }
 
-        public TileCube SpawnTile(GameObject tilePrefab, Transform spawnPoint, TileConfig tileConfig)
+        public TileCube CreateTile(Transform parent)
         {
-            GameObject go = Object.Instantiate(tilePrefab, spawnPoint.position, Quaternion.identity);
-            TileCube tile = go.GetComponent<TileCube>();
+            TileCube prefab = _staticDataService.StaticDataContainer.TileContainer.TilePrefab;
 
-            // Определяем значение тайла по шансам
-            int value = Random.value < tileConfig.chanceForTwo ? 2 : 4;
-
-            // Инициализируем тайл с конфигом
-            //tile.Initialize(value, tileConfig);
-
-            return tile;
+            return _instantiator.InstantiatePrefabForComponent<TileCube>(prefab, parent);
         }
     }
 

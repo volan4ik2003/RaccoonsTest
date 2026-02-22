@@ -19,8 +19,6 @@ namespace _Game.Scripts.TileScripts
         private IObjectPool<TileCube> _pool;
         private Rigidbody _rb;
         
-        [Header("Physics")]
-        [SerializeField] private float jumpForce = 4f;
         [SerializeField] private float minMergeImpulse = 2f; 
 
         public bool isMerging; 
@@ -98,7 +96,8 @@ namespace _Game.Scripts.TileScripts
             _value *= 2;
             UpdateVisual();
 
-            _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            // ¡≈–≈Ã —»À” œ–€∆ ¿ »«  ŒÕ‘»√¿
+            _rb.AddForce(Vector3.up * _config.mergeJumpForce, ForceMode.Impulse);
 
             if (_particleService != null)
             {
@@ -106,8 +105,7 @@ namespace _Game.Scripts.TileScripts
             }
 
             other.ReturnToPool();
-            
-            isMerging = false; 
+            isMerging = false;
         }
     }
 }
