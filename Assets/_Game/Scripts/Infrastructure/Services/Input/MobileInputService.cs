@@ -16,7 +16,8 @@ namespace _Game.Scripts.Infrastructure.Services.Input
                 if (Touchscreen.current != null && Touchscreen.current.primaryTouch.isInProgress)
                 {
                     Vector2 delta = Touchscreen.current.primaryTouch.delta.ReadValue();
-                    return delta.normalized;
+
+                    return new Vector2((delta.x / Screen.width) * 10f, 0);
                 }
 
                 return Vector2.zero;

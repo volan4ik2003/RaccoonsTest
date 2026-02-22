@@ -16,6 +16,7 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         private TileCube _currentTile;
         private Rigidbody _currentRb;
         private bool _isActive;
+        private float _targetX;
 
         private readonly Vector3 _spawnPosition = new Vector3(0, 1f, -4f);
 
@@ -48,21 +49,27 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             _currentTile = _spawnService.SpawnTile(_spawnPosition);
             _currentRb = _currentTile.GetComponent<Rigidbody>();
             _currentRb.isKinematic = true;
+            _targetX = _spawnPosition.x;
         }
 
         private void HandleMovement()
         {
-            if (Mathf.Approximately(_inputService.Axis.x, 0f)) return;
-
             var config = _staticData.StaticDataContainer.TileContainer.Config;
 
-            Vector3 newPos = _currentTile.transform.position;
+            _targetX += _inputService.Axis.x * config.inputSensitivity;
+            _targetX = Mathf.Clamp(_targetX, -config.horizontalLimit, config.horizontalLimit);
 
-            newPos.x += _inputService.Axis.x * config.moveSpeed * Time.deltaTime;
+            Vector3 currentPos = _currentTile.transform.position;
+            float smoothedX = Mathf.Lerp(currentPos.x, _targetX, Time.deltaTime * config.moveSpeed);
+            _currentTile.transform.position = new Vector3(smoothedX, currentPos.y, currentPos.z);
 
-            newPos.x = Mathf.Clamp(newPos.x, -config.horizontalLimit, config.horizontalLimit);
+            float velocityX = (_targetX - currentPos.x);
 
-            _currentTile.transform.position = newPos;
+            float tiltAngle = -velocityX * 20f;
+            tiltAngle = Mathf.Clamp(tiltAngle, -35f, 35f);
+
+            Quaternion targetRotation = Quaternion.Euler(0, 0, tiltAngle);
+            _currentTile.transform.rotation = Quaternion.Lerp(_currentTile.transform.rotation, targetRotation, Time.deltaTime * 15f);
         }
 
         private void HandleShooting()

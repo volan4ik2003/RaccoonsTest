@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TileConfig
   m_EditorClassIdentifier: 
   shootForce: 25
-  moveSpeed: 15
+  moveSpeed: 10
   inputSensitivity: 1
   horizontalLimit: 3.5
   chanceForTwo: 0.75
