@@ -8,7 +8,7 @@ using Zenject;
 
 namespace _Game.Scripts.Infrastructure.Services.Input
 {
-    public class TileControllerService : ITickable
+    public class TileControllerService : IInitializable, ITickable
     {
         private readonly TileSpawnerService _spawnService;
         private readonly StaticDataService _staticData;
@@ -34,7 +34,7 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             _audioService = audioService;
         }
 
-        public void StartGame()
+        public void Initialize()
         {
             _isActive = true;
             SpawnNext();

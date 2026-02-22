@@ -36,13 +36,9 @@ namespace _Game.Scripts.Infrastructure
                         ctx.Container.Resolve<ICoroutineRunner>()))
                 .AsSingle();
             Container.BindInterfacesAndSelfTo<ParticleService>().AsSingle();
-            Container.Bind<TileSpawnerService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<TileControllerService>().AsSingle();
-            Container.Bind<AudioService>().AsSingle();
 
             // Factories
             Container.BindInterfacesAndSelfTo<GameplayFactory>().AsSingle();
-            Container.BindInterfacesAndSelfTo<UIFactory>().AsSingle();
 
             // StateMachine
             Container.Bind<GameStateMachine>().AsSingle();

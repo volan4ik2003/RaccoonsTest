@@ -11,12 +11,10 @@ namespace _Game.Scripts.Infrastructure.States.ConcreteStates
     {
         private readonly LazyInject<GameStateMachine> _gameStateMachine;
         private readonly GameplayFactory _gameplayFactory;
-        private readonly UIFactory _uiFactory;
         
-        public LoadLevelState(LazyInject<GameStateMachine> gameStateMachine, GameplayFactory gameplayFactory, UIFactory uiFactory)
+        public LoadLevelState(LazyInject<GameStateMachine> gameStateMachine, GameplayFactory gameplayFactory)
         {
             _gameStateMachine = gameStateMachine;
-            _uiFactory = uiFactory;
             _gameplayFactory = gameplayFactory;
         }
 
@@ -33,7 +31,6 @@ namespace _Game.Scripts.Infrastructure.States.ConcreteStates
             SceneCurtain.Instance.FadeOut();
 
             _gameplayFactory.Init();
-            _uiFactory.Init();
             
             InitGameWorld();
             
@@ -42,24 +39,7 @@ namespace _Game.Scripts.Infrastructure.States.ConcreteStates
 
         private void InitGameWorld()
         {
-            var sceneContext = Object.FindAnyObjectByType<SceneContext>();
 
-            if (sceneContext != null)
-            {
-                var spawner = sceneContext.Container.Resolve<TileSpawnerService>();
-                var controller = sceneContext.Container.Resolve<TileControllerService>();
-                var audio = sceneContext.Container.Resolve<AudioService>();
-
-                spawner.InitPool();
-                controller.StartGame();
-                audio.Init();
-            }
-            else
-            {
-                Debug.LogError("No Scene Context");
-            }
-
-            _uiFactory.CreateHUD();
         }
 
         public void Exit()

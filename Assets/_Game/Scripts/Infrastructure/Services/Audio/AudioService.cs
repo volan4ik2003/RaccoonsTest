@@ -5,7 +5,7 @@ using Zenject;
 
 namespace _Game.Scripts.Infrastructure.Services.Audio
 {
-    public class AudioService
+    public class AudioService : IInitializable
     {
         private readonly StaticDataService _staticData;
 
@@ -17,7 +17,7 @@ namespace _Game.Scripts.Infrastructure.Services.Audio
             _staticData = staticData;
         }
 
-        public void Init()
+        public void Initialize()
         {
             if (_staticData.StaticDataContainer == null)
             {

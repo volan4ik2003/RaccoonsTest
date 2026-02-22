@@ -1,6 +1,7 @@
 using _Game.Scripts.Infrastructure.Factories;
 using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
+using _Game.Scripts.Infrastructure.Services.Score;
 using _Game.Scripts.TileScripts.Effects;
 using _Game.Scripts.TileScripts.StaticData;
 using TMPro;
@@ -21,6 +22,7 @@ namespace _Game.Scripts.TileScripts
         private ParticleService _particleService;
         private AudioService _audioService;
         private GameplayFactory _gameplayFactory;
+        private ScoreService _scoreService;
 
         private int _value;
         private TileConfig _config;
@@ -36,7 +38,10 @@ namespace _Game.Scripts.TileScripts
         }
 
         public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool,
-            ParticleService particleService, AudioService audioService, GameplayFactory gameplayFactory)
+            ParticleService particleService,
+            AudioService audioService,
+            GameplayFactory gameplayFactory,
+            ScoreService scoreService)
         {
             _value = value;
             _config = config;
@@ -44,6 +49,7 @@ namespace _Game.Scripts.TileScripts
             _particleService = particleService;
             _audioService = audioService;
             _gameplayFactory = gameplayFactory;
+            _scoreService = scoreService;
             isMerging = false;
             UpdateVisual();
         }
@@ -128,6 +134,8 @@ namespace _Game.Scripts.TileScripts
             {
                 _flickerEffect.PlayFlick();
             }
+
+            _scoreService?.AddMerge();
 
             other.ReturnToPool();
             isMerging = false;

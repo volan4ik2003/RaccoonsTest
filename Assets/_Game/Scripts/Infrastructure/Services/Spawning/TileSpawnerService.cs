@@ -1,6 +1,7 @@
 using _Game.Scripts.Infrastructure.Factories;
 using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
+using _Game.Scripts.Infrastructure.Services.Score;
 using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.TileScripts;
 using UnityEngine;
@@ -9,12 +10,13 @@ using Zenject;
 
 namespace _Game.Scripts.Infrastructure.Services.Spawning
 {
-    public class TileSpawnerService
+    public class TileSpawnerService : IInitializable
     {
         private readonly GameplayFactory _gameplayFactory;
         private readonly StaticDataService _staticData;
         private readonly ParticleService _particleService;
         private readonly AudioService _audioService;
+        private readonly ScoreService _scoreService;
 
         private IObjectPool<TileCube> _pool;
         private Transform _poolContainer;
@@ -23,15 +25,17 @@ namespace _Game.Scripts.Infrastructure.Services.Spawning
             GameplayFactory gameplayFactory,
             StaticDataService staticData,
             ParticleService particleService,
-            AudioService audioService)
+            AudioService audioService,
+            ScoreService scoreService)
         {
             _gameplayFactory = gameplayFactory;
             _staticData = staticData;
             _particleService = particleService;
             _audioService = audioService;
+            _scoreService = scoreService;
         }
 
-        public void InitPool()
+        public void Initialize()
         {
             _poolContainer = new GameObject("[TilePool_Container]").transform;
 
@@ -71,7 +75,7 @@ namespace _Game.Scripts.Infrastructure.Services.Spawning
             var config = _staticData.StaticDataContainer.TileContainer.Config;
             int value = Random.value < config.chanceForTwo ? 2 : 4;
 
-            tile.Initialize(value, config, _pool, _particleService, _audioService, _gameplayFactory);
+            tile.Initialize(value, config, _pool, _particleService, _audioService, _gameplayFactory, _scoreService);
 
             return tile;
         }
