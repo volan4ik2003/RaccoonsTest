@@ -36,6 +36,7 @@ namespace _Game.Scripts.Infrastructure
                         ctx.Container.Resolve<ICoroutineRunner>()))
                 .AsSingle();
             Container.BindInterfacesAndSelfTo<ParticleService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TileRegistry>().AsSingle();
 
             // Factories
             Container.BindInterfacesAndSelfTo<GameplayFactory>().AsSingle();

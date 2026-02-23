@@ -14,25 +14,16 @@ namespace _Game.Scripts.Infrastructure.Services.Spawning
     {
         private readonly GameplayFactory _gameplayFactory;
         private readonly StaticDataService _staticData;
-        private readonly ParticleService _particleService;
-        private readonly AudioService _audioService;
-        private readonly ScoreService _scoreService;
 
         private IObjectPool<TileCube> _pool;
         private Transform _poolContainer;
 
         public TileSpawnerService(
             GameplayFactory gameplayFactory,
-            StaticDataService staticData,
-            ParticleService particleService,
-            AudioService audioService,
-            ScoreService scoreService)
+            StaticDataService staticData)
         {
             _gameplayFactory = gameplayFactory;
             _staticData = staticData;
-            _particleService = particleService;
-            _audioService = audioService;
-            _scoreService = scoreService;
         }
 
         public void Initialize()
@@ -75,7 +66,7 @@ namespace _Game.Scripts.Infrastructure.Services.Spawning
             var config = _staticData.StaticDataContainer.TileContainer.Config;
             int value = Random.value < config.chanceForTwo ? 2 : 4;
 
-            tile.Initialize(value, config, _pool, _particleService, _audioService, _gameplayFactory, _scoreService);
+            tile.Initialize(value, config, _pool);
 
             return tile;
         }

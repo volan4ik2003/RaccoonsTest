@@ -1,12 +1,15 @@
 using _Game.Scripts.Infrastructure.Factories;
+using _Game.Scripts.Infrastructure.Services;
 using _Game.Scripts.Infrastructure.Services.Audio;
 using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
 using _Game.Scripts.Infrastructure.Services.Score;
 using _Game.Scripts.TileScripts.Effects;
 using _Game.Scripts.TileScripts.StaticData;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
+using Zenject;
 
 namespace _Game.Scripts.TileScripts
 {
@@ -19,17 +22,16 @@ namespace _Game.Scripts.TileScripts
         private TextMeshPro[] numberTexts;
         public MeshRenderer tileRenderer;
 
-        private ParticleService _particleService;
-        private AudioService _audioService;
-        private GameplayFactory _gameplayFactory;
-        private ScoreService _scoreService;
-
         private int _value;
         private TileConfig _config;
         private IObjectPool<TileCube> _pool;
         private Rigidbody _rb;
 
-        private bool isMerging; 
+        private bool isMerging;
+
+        public event Action<TileCube, TileCube, Vector3> OnMergeRequested;
+
+        [Inject] private ITileRegistry _registry;
 
         private void Awake()
         {
@@ -37,19 +39,11 @@ namespace _Game.Scripts.TileScripts
             _rb = GetComponent<Rigidbody>();
         }
 
-        public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool,
-            ParticleService particleService,
-            AudioService audioService,
-            GameplayFactory gameplayFactory,
-            ScoreService scoreService)
+        public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool)
         {
             _value = value;
             _config = config;
             _pool = pool;
-            _particleService = particleService;
-            _audioService = audioService;
-            _gameplayFactory = gameplayFactory;
-            _scoreService = scoreService;
             isMerging = false;
             UpdateVisual();
         }
@@ -75,6 +69,17 @@ namespace _Game.Scripts.TileScripts
             }
         }
 
+        private void OnEnable()
+        {
+            isMerging = false;
+            _registry.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            _registry.Unregister(this);
+        }
+
         public int GetValue() => _value;
 
         public void ReturnToPool()
@@ -82,9 +87,27 @@ namespace _Game.Scripts.TileScripts
             _pool.Release(this);
         }
 
+        public void ResetMerging()
+        {
+            isMerging = false;
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             TryMerge(collision);
+        }
+
+        public void SetValue(int newValue)
+        {
+            _value = newValue;
+            UpdateVisual();
+        }
+
+        public void PlayMergeJump()
+        {
+            _rb.AddForce(Vector3.up * _config.mergeJumpForce, ForceMode.Impulse);
+
+            _flickerEffect?.PlayFlick();
         }
 
         private void TryMerge(Collision collision)
@@ -93,52 +116,19 @@ namespace _Game.Scripts.TileScripts
 
             TileCube other = collision.gameObject.GetComponent<TileCube>();
             if (other == null) return;
-            if (other.isMerging) return;
             if (other.GetValue() != _value) return;
 
-            if (collision.relativeVelocity.magnitude < _config.minMergeImpulse) 
+            if (collision.relativeVelocity.magnitude < _config.minMergeImpulse)
                 return;
 
-            if (gameObject.GetInstanceID() > other.gameObject.GetInstanceID())
-            {
-                isMerging = true;
-                other.isMerging = true;
-
-                Vector3 contactPoint = collision.contacts[0].point;
-
-                MergeWith(other, contactPoint);
-            }
-        }
-
-        private void MergeWith(TileCube other, Vector3 mergePosition)
-        {
-            _value *= 2;
-            UpdateVisual();
-
-            if (_value == 2048)
-            {
-                _gameplayFactory.NotifyWin();
+            if (GetInstanceID() < other.GetInstanceID())
                 return;
-            }
 
-            _rb.AddForce(Vector3.up * _config.mergeJumpForce, ForceMode.Impulse);
+            isMerging = true;
 
-            _audioService.PlaySfx(SoundId.Merge);
+            Vector3 contactPoint = collision.contacts[0].point;
 
-            if (_particleService != null)
-            {
-                _particleService.Play(ParticleId.TileHit, mergePosition, tileRenderer.material.color);
-            }
-
-            if (_flickerEffect != null)
-            {
-                _flickerEffect.PlayFlick();
-            }
-
-            _scoreService?.AddMerge();
-
-            other.ReturnToPool();
-            isMerging = false;
+            OnMergeRequested?.Invoke(this, other, contactPoint);
         }
     }
 }
