@@ -33,6 +33,8 @@ namespace _Game.Scripts.TileScripts
 
         [Inject] private ITileRegistry _registry;
 
+        public bool IsFired { get; private set; }
+
         private void Awake()
         {
             numberTexts = GetComponentsInChildren<TextMeshPro>();
@@ -44,7 +46,10 @@ namespace _Game.Scripts.TileScripts
             _value = value;
             _config = config;
             _pool = pool;
+
             isMerging = false;
+            IsFired = false;
+
             UpdateVisual();
         }
 
@@ -91,7 +96,10 @@ namespace _Game.Scripts.TileScripts
         {
             isMerging = false;
         }
-
+        public void SetFired()
+        {
+            IsFired = true;
+        }
         private void OnCollisionEnter(Collision collision)
         {
             TryMerge(collision);
@@ -101,6 +109,23 @@ namespace _Game.Scripts.TileScripts
         {
             _value = newValue;
             UpdateVisual();
+        }
+
+        public void PrepareForBooster()
+        {
+            isMerging = true;
+
+            _rb.linearVelocity = Vector3.zero;
+            _rb.angularVelocity = Vector3.zero;
+            _rb.isKinematic = true;
+            
+            GetComponent<Collider>().enabled = false;
+        }
+
+        public void FinalizeBooster()
+        {
+            _rb.isKinematic = false;
+            GetComponent<Collider>().enabled = true;
         }
 
         public void PlayMergeJump()

@@ -5,6 +5,10 @@ namespace _Game.Scripts.Infrastructure.Services.Input
 {
     public sealed class MobileInputService : InputService
     {
+        public override bool IsBlocked { get; set; }
+
+        private bool _startedOverUI;
+
         public MobileInputService(ICoroutineRunner coroutineRunner)
         {
         }
@@ -13,6 +17,10 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         {
             get
             {
+                if (IsBlocked) return Vector2.zero;
+
+                if (_startedOverUI) return Vector2.zero;
+
                 if (Touchscreen.current != null && Touchscreen.current.primaryTouch.isInProgress)
                 {
                     Vector2 delta = Touchscreen.current.primaryTouch.delta.ReadValue();
@@ -28,9 +36,21 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         {
             get
             {
+                if (IsBlocked) return false;
+
                 if (Touchscreen.current != null)
                 {
-                    return Touchscreen.current.primaryTouch.press.wasReleasedThisFrame;
+                    var touch = Touchscreen.current.primaryTouch;
+
+                    if (touch.press.wasPressedThisFrame)
+                    {
+                        _startedOverUI = IsPointerOverUI();
+                    }
+
+                    if (touch.press.wasReleasedThisFrame)
+                    {
+                        return !_startedOverUI;
+                    }
                 }
 
                 return false;

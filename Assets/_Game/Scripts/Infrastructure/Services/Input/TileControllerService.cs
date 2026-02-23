@@ -94,6 +94,8 @@ namespace _Game.Scripts.Infrastructure.Services.Input
 
             _currentRb.angularVelocity = Vector3.zero;
 
+            _currentTile.SetFired();
+
             _currentRb.AddForce(Vector3.forward * config.shootForce, ForceMode.Impulse);
 
             _audioService.PlaySfx(SoundId.Swoosh);
