@@ -165,6 +165,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
+    Android: com.DefaultCompany.RaccoonsTest
     Standalone: com.DefaultCompany.3D-Project
   buildNumber:
     Standalone: 0
@@ -868,7 +869,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: bcef3b2a-a056-4379-9f85-dca401cc5147
   framebufferDepthMemorylessMode: 0
