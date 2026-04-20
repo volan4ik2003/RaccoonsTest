@@ -1,5 +1,4 @@
 using _Game.Scripts.Infrastructure.Services;
-using _Game.Scripts.Infrastructure.Services.Camera;
 using _Game.Scripts.Infrastructure.Services.Input;
 using _Game.Scripts.TileScripts;
 using Cysharp.Threading.Tasks;
@@ -15,7 +14,6 @@ namespace _Game.Scripts.Infrastructure.Services
         private readonly ITileRegistry _registry;
         private readonly ITileMergeService _mergeService;
         private readonly IInputService _inputService;
-        private readonly CameraService _cameraService;
 
         private const float RiseHeight = 4.5f;
         private const float WindUpDistance = 0.6f;
@@ -30,13 +28,11 @@ namespace _Game.Scripts.Infrastructure.Services
         public AutoMergeBoosterService(
             ITileRegistry registry,
             ITileMergeService mergeService,
-            IInputService inputService,
-            CameraService cameraService)
+            IInputService inputService)
         {
             _registry = registry;
             _mergeService = mergeService;
             _inputService = inputService;
-            _cameraService = cameraService;
         }
 
         public async UniTask<bool> ExecuteAsync(CancellationToken token)
@@ -66,8 +62,6 @@ namespace _Game.Scripts.Infrastructure.Services
             _mergeService.Merge(cubeA, cubeB, center);
 
             AnimatePopAsync(cubeA.transform, token).Forget();
-
-            _cameraService.ShakeAsync(0.2f, 0.15f, 7, token).Forget();
 
             _inputService.IsBlocked = false;
 
