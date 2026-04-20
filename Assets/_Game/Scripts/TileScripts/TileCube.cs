@@ -55,9 +55,11 @@ namespace _Game.Scripts.TileScripts
 
         private void UpdateVisual()
         {
+            string displayValue = FormatDisplayValue(_value);
+
             foreach (TextMeshPro number in numberTexts)
             {
-                number.text = _value.ToString();
+                number.text = displayValue;
             }
 
             foreach (var tc in _config.tileColors)
@@ -72,6 +74,16 @@ namespace _Game.Scripts.TileScripts
                     break;
                 }
             }
+        }
+
+        private static string FormatDisplayValue(int value)
+        {
+            return value switch
+            {
+                1024 => "1k",
+                2048 => "2k",
+                _ => value.ToString()
+            };
         }
 
         private void OnEnable()
