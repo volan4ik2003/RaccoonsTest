@@ -863,7 +863,7 @@ MonoBehaviour:
   _renderers:
   - {fileID: 5099537209210396967}
   _flickColor: {r: 1, g: 1, b: 1, a: 1}
-  _flickIntensity: 2
+  _flickIntensity: 4
   _flickUp: 0.03
   _flickDown: 0.2
   _flickUpEase: 6

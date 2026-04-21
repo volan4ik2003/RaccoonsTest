@@ -4,6 +4,7 @@ using _Game.Scripts.Infrastructure.Services.Spawning;
 using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.TileScripts;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
@@ -16,6 +17,8 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         private const float LaunchFovPunchDuration = 0.1f;
         private const float LaunchFovReturnDuration = 0.9f;
         private const float LaunchFovReturnOvershoot = 0.25f;
+        private const float SpawnScaleDuration = 0.9f;
+        private const float SpawnScaleOvershoot = 0.25f;
 
         private readonly TileSpawnerService _spawnService;
         private readonly StaticDataService _staticData;
@@ -27,6 +30,7 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         private Rigidbody _currentRb;
         private bool _isActive;
         private float _targetX;
+        private Tween _spawnScaleTween;
 
         private readonly Vector3 _spawnPosition = new Vector3(0, 1f, -4f);
 
@@ -64,6 +68,22 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             _currentRb = _currentTile.GetComponent<Rigidbody>();
             _currentRb.isKinematic = true;
             _targetX = _spawnPosition.x;
+
+            PlaySpawnScaleAnimation(_currentTile.transform);
+        }
+
+        private void PlaySpawnScaleAnimation(Transform target)
+        {
+            _spawnScaleTween?.Kill();
+
+            Vector3 targetScale = target.localScale;
+            target.localScale = Vector3.zero;
+
+            _spawnScaleTween = target
+                .DOScale(targetScale, SpawnScaleDuration)
+                .SetEase(Ease.OutElastic, SpawnScaleOvershoot)
+                .SetLink(target.gameObject)
+                .OnComplete(() => _spawnScaleTween = null);
         }
 
         private void HandleMovement()
@@ -98,6 +118,8 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         {
             var config = _staticData.StaticDataContainer.TileContainer.Config;
 
+            CompleteSpawnScaleAnimation();
+
             _currentRb.isKinematic = false;
 
             _currentTile.transform.rotation = Quaternion.identity;
@@ -121,6 +143,14 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             await Task.Delay(config.spawnDelayMs);
 
             SpawnNext();
+        }
+
+        private void CompleteSpawnScaleAnimation()
+        {
+            if (_spawnScaleTween == null || !_spawnScaleTween.IsActive()) return;
+
+            _spawnScaleTween.Complete();
+            _spawnScaleTween = null;
         }
     }
 }
