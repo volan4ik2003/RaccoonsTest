@@ -12,9 +12,9 @@ namespace _Game.Scripts.Infrastructure.Services
 {
     public class TileMergeService : ITileMergeService
     {
-        private const float MergeShakeDuration = 0.45f;
-        private const float MergeShakeMagnitude = 0.5f;
-        private const float MergeShakeSpeed = 16f;
+        private const float MergeShakeDuration = 0.42f;
+        private const float MergeShakeMagnitude = 0.4f;
+        private const float MergeShakeSpeed = 9f;
 
         private readonly GameplayFactory _gameplayFactory;
         private readonly ScoreService _scoreService;

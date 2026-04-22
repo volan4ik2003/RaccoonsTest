@@ -38,6 +38,9 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
             float elapsed = 0f;
             float randomStart = UnityEngine.Random.Range(-1000f, 1000f);
             Vector3 smoothVelocity = Vector3.zero;
+            const float shakeSmoothTime = 0.065f;
+            const float returnSmoothTime = 0.08f;
+            const float returnDuration = 0.22f;
 
             try
             {
@@ -50,7 +53,7 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
                     float noiseTime = randomStart + elapsed * speed;
 
                     float x = (Mathf.PerlinNoise(noiseTime, randomStart) * 2f - 1f) * amplitude;
-                    float y = (Mathf.PerlinNoise(randomStart, noiseTime) * 2f - 1f) * amplitude;
+                    float y = (Mathf.PerlinNoise(randomStart, noiseTime) * 2f - 1f) * amplitude * 0.6f;
 
                     Vector3 targetPosition = new Vector3(
                         _originalPosition.x + x,
@@ -61,7 +64,7 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
                         _cameraTransform.localPosition,
                         targetPosition,
                         ref smoothVelocity,
-                        0.035f,
+                        shakeSmoothTime,
                         float.PositiveInfinity,
                         Time.deltaTime);
 
@@ -69,7 +72,6 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
                 }
 
                 float returnElapsed = 0f;
-                const float returnDuration = 0.12f;
 
                 while (returnElapsed < returnDuration)
                 {
@@ -79,7 +81,7 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
                         _cameraTransform.localPosition,
                         _originalPosition,
                         ref smoothVelocity,
-                        0.04f,
+                        returnSmoothTime,
                         float.PositiveInfinity,
                         Time.deltaTime);
 
@@ -180,7 +182,7 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
 
         private static float ShakeEnvelope(float t)
         {
-            float fadeIn = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f));
+            float fadeIn = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.28f));
             float fadeOut = 1f - Mathf.SmoothStep(0f, 1f, t);
 
             return fadeIn * fadeOut;
