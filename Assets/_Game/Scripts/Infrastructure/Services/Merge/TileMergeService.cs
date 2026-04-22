@@ -12,50 +12,57 @@ namespace _Game.Scripts.Infrastructure.Services
 {
     public class TileMergeService : ITileMergeService
     {
-        private const float MergeShakeDuration = 0.2f;
-        private const float MergeShakeMagnitude = 0.15f;
-        private const float MergeShakeSpeed = 7f;
+        private const float MergeShakeDuration = 0.45f;
+        private const float MergeShakeMagnitude = 0.5f;
+        private const float MergeShakeSpeed = 16f;
 
         private readonly GameplayFactory _gameplayFactory;
         private readonly ScoreService _scoreService;
         private readonly AudioService _audioService;
         private readonly ParticleService _particleService;
         private readonly CameraService _cameraService;
+        private readonly MergeFloatingTextService _floatingTextService;
 
         public TileMergeService(
             GameplayFactory gameplayFactory,
             ScoreService scoreService,
             AudioService audioService,
             ParticleService particleService,
-            CameraService cameraService)
+            CameraService cameraService,
+            MergeFloatingTextService floatingTextService)
         {
             _gameplayFactory = gameplayFactory;
             _scoreService = scoreService;
             _audioService = audioService;
             _particleService = particleService;
             _cameraService = cameraService;
+            _floatingTextService = floatingTextService;
         }
 
         public void Merge(TileCube main, TileCube other, Vector3 pos)
         {
             main.SetValue(main.GetValue() * 2);
+            int mergedValue = main.GetValue();
+            Color resultColor = main.tileRenderer.material.color;
 
-            if (main.GetValue() == 2048)
+            if (mergedValue == 2048)
             {
                 _gameplayFactory.NotifyWin();
             }
 
             main.PlayMergeJump();
+            main.PlayMergeBounce();
             _audioService.PlaySfx(SoundId.Merge);
             _cameraService.ShakeAsync(MergeShakeDuration, MergeShakeMagnitude, MergeShakeSpeed).Forget();
+            _floatingTextService.Show(main.GetDisplayValue(), pos, resultColor);
 
             _particleService?.Play(
                 ParticleId.TileHit,
                 pos,
-                main.tileRenderer.material.color
+                resultColor
             );
 
-            _scoreService.AddMerge();
+            _scoreService.AddScore(mergedValue);
 
             other.ReturnToPool();
 

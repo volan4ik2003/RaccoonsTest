@@ -435,6 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd339a0320ce8f841bcc90424ef9c7d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mergeFloatingTextPrefab: {fileID: 2165624343550111968, guid: 1c67c7f1b3778b14ca49599eea0632ac, type: 3}
 --- !u!1 &388963645
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,7 +995,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.33542582, y: -0, z: -0, w: 0.94206667}
-  m_LocalPosition: {x: 0, y: 15.39, z: -14.97}
+  m_LocalPosition: {x: 0, y: 15.39, z: -12.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

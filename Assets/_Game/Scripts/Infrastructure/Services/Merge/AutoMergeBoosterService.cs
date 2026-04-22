@@ -21,10 +21,6 @@ namespace _Game.Scripts.Infrastructure.Services
         private const float WindUpDuration = 0.25f;
         private const float StrikeDuration = 0.12f;
 
-        private const float PopScaleFactor = 1.3f;
-        private const float PopDuration = 0.15f;
-        private const float ReturnDuration = 0.1f;
-
         public AutoMergeBoosterService(
             ITileRegistry registry,
             ITileMergeService mergeService,
@@ -61,50 +57,9 @@ namespace _Game.Scripts.Infrastructure.Services
 
             _mergeService.Merge(cubeA, cubeB, center);
 
-            AnimatePopAsync(cubeA.transform, token).Forget();
-
             _inputService.IsBlocked = false;
 
             return true;
-        }
-
-        private async UniTaskVoid AnimatePopAsync(Transform target, CancellationToken token)
-        {
-            if (target == null) return;
-
-            Vector3 originalScale = target.transform.localScale;
-            Vector3 targetScale = originalScale * PopScaleFactor;
-
-            float elapsed = 0f;
-
-            while (elapsed < PopDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / PopDuration;
-
-                if (target == null) return;
-
-                target.localScale = Vector3.Lerp(originalScale, targetScale, Mathf.SmoothStep(0f, 1f, t));
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
-            }
-
-            elapsed = 0f;
-
-            while (elapsed < ReturnDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / ReturnDuration;
-
-                if (target == null) return;
-
-                target.localScale = Vector3.Lerp(targetScale, originalScale, Mathf.SmoothStep(0f, 1f, t));
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
-            }
-
-            if (target != null)
-            {
-                target.localScale = originalScale;
-            }
         }
 
         private (TileCube, TileCube)? FindPair()

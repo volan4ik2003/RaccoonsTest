@@ -30,12 +30,14 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
             if (_cameraTransform == null) return;
 
             _shakeCts?.Cancel();
-            _shakeCts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            var linkedToken = _shakeCts.Token;
+
+            var shakeCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            _shakeCts = shakeCts;
+            var linkedToken = shakeCts.Token;
 
             float elapsed = 0f;
-
             float randomStart = UnityEngine.Random.Range(-1000f, 1000f);
+            Vector3 smoothVelocity = Vector3.zero;
 
             try
             {
@@ -43,24 +45,56 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
                 {
                     elapsed += Time.deltaTime;
 
-                    float fadeOut = 1f - (elapsed / duration);
+                    float t = Mathf.Clamp01(elapsed / duration);
+                    float amplitude = magnitude * ShakeEnvelope(t);
+                    float noiseTime = randomStart + elapsed * speed;
 
-                    float x = (Mathf.PerlinNoise(randomStart + elapsed * speed, 0f) * 2f - 1f) * magnitude * fadeOut;
-                    float y = (Mathf.PerlinNoise(0f, randomStart + elapsed * speed) * 2f - 1f) * magnitude * fadeOut;
+                    float x = (Mathf.PerlinNoise(noiseTime, randomStart) * 2f - 1f) * amplitude;
+                    float y = (Mathf.PerlinNoise(randomStart, noiseTime) * 2f - 1f) * amplitude;
 
-                    _cameraTransform.localPosition = new Vector3(
+                    Vector3 targetPosition = new Vector3(
                         _originalPosition.x + x,
                         _originalPosition.y + y,
                         _originalPosition.z);
 
+                    _cameraTransform.localPosition = Vector3.SmoothDamp(
+                        _cameraTransform.localPosition,
+                        targetPosition,
+                        ref smoothVelocity,
+                        0.035f,
+                        float.PositiveInfinity,
+                        Time.deltaTime);
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, linkedToken);
+                }
+
+                float returnElapsed = 0f;
+                const float returnDuration = 0.12f;
+
+                while (returnElapsed < returnDuration)
+                {
+                    returnElapsed += Time.deltaTime;
+
+                    _cameraTransform.localPosition = Vector3.SmoothDamp(
+                        _cameraTransform.localPosition,
+                        _originalPosition,
+                        ref smoothVelocity,
+                        0.04f,
+                        float.PositiveInfinity,
+                        Time.deltaTime);
+
                     await UniTask.Yield(PlayerLoopTiming.Update, linkedToken);
                 }
             }
+            catch (System.OperationCanceledException) when (linkedToken.IsCancellationRequested)
+            {
+            }
             finally
             {
-                if (_cameraTransform != null)
+                if (_cameraTransform != null && ReferenceEquals(_shakeCts, shakeCts))
                 {
                     _cameraTransform.localPosition = _originalPosition;
+                    _shakeCts = null;
                 }
             }
         }
@@ -142,6 +176,14 @@ namespace _Game.Scripts.Infrastructure.Services.Camera
         private static float EaseOutCubic(float t)
         {
             return 1f - Mathf.Pow(1f - t, 3f);
+        }
+
+        private static float ShakeEnvelope(float t)
+        {
+            float fadeIn = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.18f));
+            float fadeOut = 1f - Mathf.SmoothStep(0f, 1f, t);
+
+            return fadeIn * fadeOut;
         }
 
         private static float EaseOutElastic(float t, float overshoot)

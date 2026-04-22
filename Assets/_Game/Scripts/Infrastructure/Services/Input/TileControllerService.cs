@@ -1,9 +1,7 @@
 using _Game.Scripts.Infrastructure.Services.Audio;
-using _Game.Scripts.Infrastructure.Services.Camera;
 using _Game.Scripts.Infrastructure.Services.Spawning;
 using _Game.Scripts.Infrastructure.Services.StaticData;
 using _Game.Scripts.TileScripts;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -13,10 +11,6 @@ namespace _Game.Scripts.Infrastructure.Services.Input
 {
     public class TileControllerService : IInitializable, ITickable
     {
-        private const float LaunchFovIncrease = 3f;
-        private const float LaunchFovPunchDuration = 0.1f;
-        private const float LaunchFovReturnDuration = 0.9f;
-        private const float LaunchFovReturnOvershoot = 0.25f;
         private const float SpawnScaleDuration = 0.9f;
         private const float SpawnScaleOvershoot = 0.25f;
 
@@ -24,7 +18,6 @@ namespace _Game.Scripts.Infrastructure.Services.Input
         private readonly StaticDataService _staticData;
         private readonly AudioService _audioService;
         private readonly IInputService _inputService;
-        private readonly CameraService _cameraService;
 
         private TileCube _currentTile;
         private Rigidbody _currentRb;
@@ -38,14 +31,12 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             TileSpawnerService spawnService,
             StaticDataService staticData,
             IInputService inputService,
-            AudioService audioService,
-            CameraService cameraService)
+            AudioService audioService)
         {
             _spawnService = spawnService;
             _staticData = staticData;
             _inputService = inputService;
             _audioService = audioService;
-            _cameraService = cameraService;
         }
 
         public void Initialize()
@@ -129,11 +120,6 @@ namespace _Game.Scripts.Infrastructure.Services.Input
             _currentTile.SetFired();
 
             _currentRb.AddForce(Vector3.forward * config.shootForce, ForceMode.Impulse);
-            _cameraService.PlayLaunchFovAsync(
-                LaunchFovIncrease,
-                LaunchFovPunchDuration,
-                LaunchFovReturnDuration,
-                LaunchFovReturnOvershoot).Forget();
 
             _audioService.PlaySfx(SoundId.Swoosh);
 

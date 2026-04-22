@@ -15,6 +15,12 @@ namespace _Game.Scripts.Infrastructure.Services.Score
             OnMergeCountChanged?.Invoke(MergedCount);
         }
 
+        public void AddScore(int amount)
+        {
+            MergedCount += amount;
+            OnMergeCountChanged?.Invoke(MergedCount);
+        }
+
         public void Reset()
         {
             MergedCount = 0;

@@ -5,6 +5,7 @@ using _Game.Scripts.Infrastructure.Services.ParticlesSpawn;
 using _Game.Scripts.Infrastructure.Services.Score;
 using _Game.Scripts.TileScripts.Effects;
 using _Game.Scripts.TileScripts.StaticData;
+using DG.Tweening;
 using System;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,10 @@ namespace _Game.Scripts.TileScripts
     [RequireComponent(typeof(Rigidbody))]
     public class TileCube : MonoBehaviour
     {
+        private const float MergeBounceStartScale = 0.5f;
+        private const float MergeBounceDuration = 0.45f;
+        private const float MergeBounceOvershoot = 1.5f;
+
         [SerializeField] private TileFlickerEffect _flickerEffect;
         [SerializeField] private TailVFX _vfxSync;
 
@@ -26,6 +31,8 @@ namespace _Game.Scripts.TileScripts
         private TileConfig _config;
         private IObjectPool<TileCube> _pool;
         private Rigidbody _rb;
+        private Vector3 _defaultScale;
+        private Tween _mergeBounceTween;
 
         private bool isMerging;
 
@@ -39,6 +46,7 @@ namespace _Game.Scripts.TileScripts
         {
             numberTexts = GetComponentsInChildren<TextMeshPro>();
             _rb = GetComponent<Rigidbody>();
+            _defaultScale = transform.localScale;
         }
 
         public void Initialize(int value, TileConfig config, IObjectPool<TileCube> pool)
@@ -49,13 +57,14 @@ namespace _Game.Scripts.TileScripts
 
             isMerging = false;
             IsFired = false;
+            ResetScale();
 
             UpdateVisual();
         }
 
         private void UpdateVisual()
         {
-            string displayValue = FormatDisplayValue(_value);
+            string displayValue = GetDisplayValue();
 
             foreach (TextMeshPro number in numberTexts)
             {
@@ -76,6 +85,11 @@ namespace _Game.Scripts.TileScripts
             }
         }
 
+        public string GetDisplayValue()
+        {
+            return FormatDisplayValue(_value);
+        }
+
         private static string FormatDisplayValue(int value)
         {
             return value switch
@@ -94,6 +108,9 @@ namespace _Game.Scripts.TileScripts
 
         private void OnDisable()
         {
+            _mergeBounceTween?.Kill();
+            transform.localScale = _defaultScale;
+
             _registry.Unregister(this);
         }
 
@@ -145,6 +162,26 @@ namespace _Game.Scripts.TileScripts
             _rb.AddForce(Vector3.up * _config.mergeJumpForce, ForceMode.Impulse);
 
             _flickerEffect?.PlayFlick();
+        }
+
+        public void PlayMergeBounce()
+        {
+            _mergeBounceTween?.Kill();
+
+            transform.localScale = _defaultScale * MergeBounceStartScale;
+
+            _mergeBounceTween = transform
+                .DOScale(_defaultScale, MergeBounceDuration)
+                .SetEase(Ease.OutElastic, MergeBounceOvershoot)
+                .SetLink(gameObject)
+                .OnComplete(() => _mergeBounceTween = null);
+        }
+
+        private void ResetScale()
+        {
+            _mergeBounceTween?.Kill();
+            _mergeBounceTween = null;
+            transform.localScale = _defaultScale;
         }
 
         private void TryMerge(Collision collision)
